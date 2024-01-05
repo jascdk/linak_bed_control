@@ -1,1 +1,67 @@
+# Linak Bed Control
+#
+# This config is for integrating your elevated bed into Home Assistant, if your bed is equipped with Linak Motors.
+# This config is tested with an Linak TD-5 Advanced Motor
+# © Jacob Scherrebeck
+#
+
+substitutions:
+  device_name: 'my-linak-bed'
+  friendly_name: 'My Bed'
+  device_description: "Control elevated bed in Home Assistant by controlling Bluetooth Linak Motors with an esp32 dev board"
+  project_version: "1.0.0"
+  mac_address: "D2:3E:FE:30:27:F9" # Change this to your beds unique mac-addresse
+  latitude: "55.0000" # Change this to your place on earth
+  longitude: "9.0000" # Change this to your place on earth
+
+esphome:
+  name: '${device_name}'
+  comment: '${device_description}'
+  project:
+    name: "jacobscherrebeck.linak-bed-control"
+    version: "${project_version}"  
+
+esp32:
+  board: esp32dev
+  framework:
+    type: esp-idf    
+
+dashboard_import:
+  package_import_url: github://jascdk/Linak_bed_control/linak-bed-control/config.yaml@main
+
+packages:
+  basis: !include ../components/basis.yaml
+  automations: !include ../components/automations.yaml
+  scripts: !include ../components/scripts.yaml  
+  globals: !include ../components/globals.yaml    
+  ble_client: !include ../components/ble_client.yaml    
+  cover: !include ../components/cover.yaml 
+  select: !include ../components/select.yaml 
+
+# Enable logging
+logger:
+
+# Allow OTA updates
+ota:
+  safe_mode: true
+  reboot_timeout: 10min
+  num_attempts: 5
+
+# Allow provisioning Wi-Fi via serial
+improv_serial:
+
+wifi:
+  # Set up a wifi access point
+  ap:
+    ssid: '${friendly_name}'
+
+# In combination with the `ap` this allows the user
+# to provision wifi credentials to the device via WiFi AP.
+captive_portal:
+
+# To have a "next url" for improv serial
+web_server:    
+
+esp32_ble_tracker:     
+                                                                                                    
 
