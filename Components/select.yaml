@@ -1,0 +1,27 @@
+select:
+  - platform: template
+    id: select_preset
+    name: ${friendly_name} Preset Mode
+    optimistic: true
+    options:
+      - "Flat"
+      - "Sleep"
+      - "TV"
+      - "Top Position" 
+    initial_option: Flat     
+    on_value:
+      then:
+        - lambda: |-
+            if (id(select_preset).state == "Flat") {
+              id(preset_1_select).execute();
+
+            } else if (id(select_preset).state == "Sleep") {
+              id(preset_2_select).execute();
+
+            } else if (id(select_preset).state == "TV") {
+              id(preset_3_select).execute();
+
+            } else if (id(select_preset).state == "Top Position") {
+              id(preset_4_select).execute();
+
+            }
