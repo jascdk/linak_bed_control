@@ -1,0 +1,58 @@
+cover:
+
+### Head + feet 
+
+  - platform: template
+    name: "${friendly_name} Both"
+    id: both_actuators
+    assumed_state: true
+    icon: "mdi:bed"
+    lambda: |-
+      if (id(head_percent).state >= 1) {
+        return COVER_OPEN;
+      } else {
+        return COVER_CLOSED;
+      }
+    open_action:
+      - script.execute: my_bed_up
+      - logger.log: "Repeat both actuators UP"
+    stop_action:
+      - script.execute: my_bed_stop
+      - logger.log: "Action stopped"     
+    close_action:
+      - script.execute: my_bed_down
+      - logger.log: "Repeat both actuators DOWN"
+
+### Head  
+
+  - platform: template
+    name: "${friendly_name} Head"
+    id: head_actuator
+    assumed_state: true
+    icon: "mdi:bed"
+    open_action:
+      - script.execute: my_bed_head_up
+      - logger.log: "Repeat head actuator UP"
+    stop_action:
+      - script.execute: my_bed_stop
+      - logger.log: "Action stopped"      
+    close_action:
+      - script.execute: my_bed_head_down
+      - logger.log: "Repeat head actuator DOWN"    
+
+### Feet 
+
+  - platform: template
+    name: "${friendly_name} Feet"
+    id: feet_actuator
+    assumed_state: true
+    icon: "mdi:bed"
+    open_action:
+      - script.execute: my_bed_feet_up
+      - logger.log: "Repeat feet actuator UP"
+    stop_action:
+      - script.execute: my_bed_stop
+      - logger.log: "Action stopped"      
+    close_action:
+      - script.execute: my_bed_feet_down
+      - logger.log: "Repeat feet actuator DOWN" 
