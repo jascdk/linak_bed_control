@@ -1,8 +1,4 @@
 # Basic configuration #
-button:
-  # Restart the ESP
-  - platform: restart
-    name: '${friendly_name} - Restart ESP'
 
 # Sensors for ESP version and WIFI information
 text_sensor:
@@ -154,6 +150,10 @@ switch:
     entity_category: config   
 
 button:
+
+# Restart the ESP
+  - platform: restart
+    name: '${friendly_name} - Restart ESP'
 
 # Underbed light button
 
