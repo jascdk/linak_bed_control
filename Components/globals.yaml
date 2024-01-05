@@ -1,0 +1,5 @@
+globals:
+  # To store the Linak Bed Connection Status
+  - id: ble_client_connected
+    type: bool
+    initial_value: 'false'
