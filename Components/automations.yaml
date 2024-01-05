@@ -4,8 +4,8 @@
 # https://esphome.io/components/sun.html
   
 sun:
-  latitude: '${lat}'
-  longitude: '${long}'
+  latitude: '${latitude}'
+  longitude: '${longitude}'
   
   on_sunrise:
     then:
