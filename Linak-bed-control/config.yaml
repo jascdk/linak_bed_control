@@ -30,13 +30,13 @@ dashboard_import:
   package_import_url: github://jascdk/Linak_bed_control/linak-bed-control/config.yaml@main
 
 packages:
-  basis: !include ../components/basis.yaml
-  automations: !include ../components/automations.yaml
-  scripts: !include ../components/scripts.yaml  
-  globals: !include ../components/globals.yaml    
-  ble_client: !include ../components/ble_client.yaml    
-  cover: !include ../components/cover.yaml 
-  select: !include ../components/select.yaml 
+  basis: !include ../Components/basis.yaml
+  automations: !include ../Components/automations.yaml
+  scripts: !include ../Components/scripts.yaml  
+  globals: !include ../Components/globals.yaml    
+  ble_client: !include ../Components/ble_client.yaml    
+  cover: !include ../Components/cover.yaml 
+  select: !include ../Components/select.yaml 
 
 # Enable logging
 logger:
