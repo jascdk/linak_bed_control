@@ -28,8 +28,201 @@ text_sensor:
       name: '${friendly_name} - Connected SSID'
       icon: mdi:wifi-strength-2
 
+binary_sensor:
+
+  # Bed Bluetooth Connection Status
+  - platform: template
+    name: '${friendly_name} Connection'
+    id: bed_connection
+    lambda: 'return id(ble_client_connected);'    
+
 sensor:
+
   # WiFi signal
   - platform: wifi_signal
     name: "${friendly_name} - WiFi Signal"
-    update_interval: 120s  
+    update_interval: 120s 
+
+  # My Bed Head Height Sensor
+  - platform: ble_client
+    type: characteristic
+    ble_client_id: bed_1
+    id: my_bed_head_height
+    name: '${friendly_name} head height'
+    service_uuid: '99fa0020-338a-1024-8a49-009c0215f78a'
+    characteristic_uuid: '99fa0028-338a-1024-8a49-009c0215f78a'
+    icon: 'mdi:arrow-up-down'
+    unit_of_measurement: 'cm'
+    accuracy_decimals: 1
+    update_interval: never
+    notify: true
+    lambda: |-
+      uint16_t raw_height = ((uint16_t)x[1] << 8) | x[0];
+      unsigned short height_mm = raw_height /5;
+ 
+      return (float) height_mm /5;
+ 
+  # My Bed Feet Height Sensor
+  - platform: ble_client
+    type: characteristic
+    ble_client_id: bed_1
+    id: my_bed_feet_height
+    name: '${friendly_name} feet height'
+    service_uuid: '99fa0020-338a-1024-8a49-009c0215f78a'
+    characteristic_uuid: '99fa0027-338a-1024-8a49-009c0215f78a'
+    icon: 'mdi:arrow-up-down'
+    unit_of_measurement: 'cm'
+    accuracy_decimals: 1
+    update_interval: never
+    notify: true
+    lambda: |-
+      uint16_t raw_height = ((uint16_t)x[1] << 8) | x[0];
+      unsigned short height_mm = raw_height / 6;
+ 
+      return (float) height_mm / 5;  
+
+  # Bed Speed Sensor
+  - platform: ble_client
+    type: characteristic
+    ble_client_id: bed_1
+    id: bed_speed
+    name: '${friendly_name} bed speed'
+    service_uuid: '99fa0020-338a-1024-8a49-009c0215f78a'
+    characteristic_uuid: '99fa0028-338a-1024-8a49-009c0215f78a'
+    icon: 'mdi:speedometer'
+    unit_of_measurement: 'cm/min' # I'm not sure this unit is correct
+    accuracy_decimals: 0
+    update_interval: never
+    notify: true
+    lambda: |-
+      uint16_t raw_speed = ((uint16_t)x[3] << 8) | x[2];
+      return raw_speed / 100;
+
+  - platform: template
+    name: "${friendly_name} feet height percent"
+    id: feet_percent
+    unit_of_measurement: "%"
+    icon: "mdi:percent"
+    update_interval: 30s  # Adjust the update interval as needed
+    lambda: |-
+      if (id(my_bed_feet_height).state == 0) {
+        return 0.0;
+      } else {
+        return (id(my_bed_feet_height).state / 18.2) * 100.0;
+      }      
+
+  - platform: template
+    name: "${friendly_name} head height percent"
+    id: head_percent
+    unit_of_measurement: "%"
+    icon: "mdi:percent"
+    update_interval: 30s  # Adjust the update interval as needed
+    lambda: |-
+      if (id(my_bed_head_height).state == 0) {
+        return 0.0;
+      } else {
+        return (id(my_bed_head_height).state / 32.6) * 100.0;
+      }   
+
+### Underbed-Light ####
+
+switch:
+  - platform: template
+    name: "${friendly_name} Light Switch"
+    id: light_bed_toggle
+    optimistic: true
+    turn_on_action: 
+    - delay: 1s  
+    - ble_client.ble_write:
+        id: bed_1
+        service_uuid: 99fa0001-338a-1024-8a49-009c0215f78a
+        characteristic_uuid: 99fa0002-338a-1024-8a49-009c0215f78a
+        value: [0x92, 0x00]
+    turn_off_action: 
+    - delay: 1s  
+    - ble_client.ble_write:
+        id: bed_1
+        service_uuid: 99fa0001-338a-1024-8a49-009c0215f78a
+        characteristic_uuid: 99fa0002-338a-1024-8a49-009c0215f78a
+        value: [0x93, 0x00]   
+
+### BLE on/off switch 
+
+  - platform: ble_client
+    ble_client_id: bed_1
+    name: "${friendly_name} BLE" 
+    entity_category: config   
+
+button:
+
+# Underbed light button
+
+  - platform: template
+    name: "${friendly_name} Light Button"
+    id: light_bed
+    on_press:
+      then:
+      - delay: 1s  
+      - ble_client.ble_write:
+          id: bed_1
+          service_uuid: 99fa0001-338a-1024-8a49-009c0215f78a
+          characteristic_uuid: 99fa0002-338a-1024-8a49-009c0215f78a
+          value: [0x94, 0x00]   
+
+### Presets - move bed to given position - and store it. Preset can be recalled.   
+
+  - platform: template
+    name: "${friendly_name} Store Preset 1"
+    id: store_preset_1
+    icon: "mdi:file-account"
+    entity_category: config
+    on_press:
+      then:
+        - ble_client.ble_write:
+            id: bed_1
+            service_uuid: 99fa0001-338a-1024-8a49-009c0215f78a
+            characteristic_uuid: 99fa0002-338a-1024-8a49-009c0215f78a
+            value: [0x38, 0x00] 
+        - logger.log: "Preset 1 Saved"             
+
+  - platform: template
+    name: "${friendly_name} Store Preset 2"
+    id: store_preset_2
+    icon: "mdi:file-account"
+    entity_category: config
+    on_press:
+      then:
+        - ble_client.ble_write:
+            id: bed_1
+            service_uuid: 99fa0001-338a-1024-8a49-009c0215f78a
+            characteristic_uuid: 99fa0002-338a-1024-8a49-009c0215f78a
+            value: [0x39, 0x00]
+        - logger.log: "Preset 2 Saved"              
+
+  - platform: template
+    name: "${friendly_name} Store Preset 3"
+    id: store_preset_3
+    icon: "mdi:file-account"
+    entity_category: config
+    on_press:
+      then:
+        - ble_client.ble_write:
+            id: bed_1
+            service_uuid: 99fa0001-338a-1024-8a49-009c0215f78a
+            characteristic_uuid: 99fa0002-338a-1024-8a49-009c0215f78a
+            value: [0x3A, 0x00] 
+        - logger.log: "Preset 3 Saved"      
+
+  - platform: template
+    name: "${friendly_name} Store Preset 4"
+    id: store_preset_4
+    icon: "mdi:file-account"
+    entity_category: config
+    on_press:
+      then:
+        - ble_client.ble_write:
+            id: bed_1
+            service_uuid: 99fa0001-338a-1024-8a49-009c0215f78a
+            characteristic_uuid: 99fa0002-338a-1024-8a49-009c0215f78a
+            value: [0x45, 0x00] 
+        - logger.log: "Preset 4 Saved"             
