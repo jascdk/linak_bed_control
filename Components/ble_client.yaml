@@ -1,0 +1,21 @@
+ble_client:
+  - mac_address: ${mac_address}
+    id: bed_1
+    on_connect:
+      then:
+        # Update the Linak Bed Connection Status
+        - lambda: |-
+            id(ble_client_connected) = true;
+            ESP_LOGD("ble_client_lambda", "${friendly_name}");
+        - delay: 5s
+       # Update Linak Bed height sensors after bluetooth is connected
+        - lambda: |-
+            id(my_bed_head_height).update();
+            id(my_bed_feet_height).update();     
+            id(feet_percent).update();  
+            id(head_percent).update();                           
+    on_disconnect:
+      then:
+        - lambda: |-
+            id(ble_client_connected) = false;
+            ESP_LOGD("ble_client_lambda", "${friendly_name}"); 
