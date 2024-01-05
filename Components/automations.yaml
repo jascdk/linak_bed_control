@@ -1,0 +1,58 @@
+# Below config is optional - else comment it out in your config (at my home we have cleaning every wednesday - bed moves up automatically - makes cleaning under bed easy. Also automate bed preset when it is sleep time:)
+# Enable time and component to automate bed actions during days 
+# https://esphome.io/components/time/homeassistant.html
+# https://esphome.io/components/sun.html
+  
+sun:
+  latitude: '${lat}'
+  longitude: '${long}'
+  
+  on_sunrise:
+    then:
+      - logger.log: Good morning - Bed will now turn flat!
+      - select.set:
+          id: select_preset
+          option: "Flat"
+          
+  on_sunset:
+    then:
+      - logger.log: Good morning - Bed will now turn into sleep mode!
+      - select.set:
+          id: select_preset
+          option: "Sleep"
+
+time:
+  - platform: homeassistant 
+    on_time:
+    
+      # Every Wednesday at 8 o'clock
+      - seconds: 0
+        minutes: 00
+        hours: 8
+        days_of_week: WED
+        then:
+          - select.set:
+              id: select_preset
+              option: "Top Position"  
+         - logger.log: Cleaning Mode Start - Bed all the way up! 
+         
+      # Every Wednesday
+      - seconds: 0
+        minutes: 00
+        hours: 13
+        days_of_week: WED
+        then:
+          - select.set: 
+              id: select_preset
+              option: "Flat" 
+         - logger.log: Cleaning Mode finished- Bed all the way down!                  
+  
+text_sensor:
+  - platform: sun
+    name: Sun Next Sunrise
+    type: sunrise
+    icon: mdi:weather-sunset-up
+  - platform: sun
+    name: Sun Next Sunset
+    type: sunset 
+    icon: mdi:weather-sunset-down   
