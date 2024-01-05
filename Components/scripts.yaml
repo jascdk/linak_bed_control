@@ -1,0 +1,127 @@
+# General mowing scripts
+
+script:
+  # Turn Head up and down (standalone)
+  - id: my_bed_head_up
+    then:
+      - ble_client.ble_write:
+          id: bed_1
+          service_uuid: 99fa0001-338a-1024-8a49-009c0215f78a
+          characteristic_uuid: 99fa0002-338a-1024-8a49-009c0215f78a
+          value: [0x0b, 0x00]
+      - delay: 0.05s  
+
+  - id: my_bed_head_down
+    then:
+      - ble_client.ble_write:
+          id: bed_1
+          service_uuid: 99fa0001-338a-1024-8a49-009c0215f78a
+          characteristic_uuid: 99fa0002-338a-1024-8a49-009c0215f78a
+          value: [0x0a, 0x00]
+      - delay: 0.05s    
+
+  # Turn feet up and down (standalone)
+  - id: my_bed_feet_up
+    then:
+      - ble_client.ble_write:
+          id: bed_1
+          service_uuid: 99fa0001-338a-1024-8a49-009c0215f78a
+          characteristic_uuid: 99fa0002-338a-1024-8a49-009c0215f78a
+          value: [0x09, 0x00]
+      - delay: 0.05s  
+
+  - id: my_bed_feet_down
+    then:
+      - ble_client.ble_write:
+          id: seng_1
+          service_uuid: 99fa0001-338a-1024-8a49-009c0215f78a
+          characteristic_uuid: 99fa0002-338a-1024-8a49-009c0215f78a
+          value: [0x08, 0x00]
+      - delay: 0.05s
+
+  # Turn feet / head up and down (both actuators)
+  - id: my_bed_up
+    then:
+      - ble_client.ble_write:
+          id: bed_1
+          service_uuid: 99fa0001-338a-1024-8a49-009c0215f78a
+          characteristic_uuid: 99fa0002-338a-1024-8a49-009c0215f78a
+          value: [0x01, 0x00]
+      - delay: 0.05s  
+
+  - id: my_bed_down
+    then:
+      - ble_client.ble_write:
+          id: bed_1
+          service_uuid: 99fa0001-338a-1024-8a49-009c0215f78a
+          characteristic_uuid: 99fa0002-338a-1024-8a49-009c0215f78a
+          value: [0x00, 0x00]
+      - delay: 0.05s            
+                 
+  # Stop movement
+  - id: my_bed_stop
+    then:
+      - ble_client.ble_write:
+          id: bed_1
+          service_uuid: 99fa0001-338a-1024-8a49-009c0215f78a
+          characteristic_uuid: 99fa0002-338a-1024-8a49-009c0215f78a
+          value: [0xFF, 0x00] 
+      - delay: 0.05s  
+
+# General preset scripts
+
+  # Preset 1
+  - id: preset_1_select
+    then:
+      - repeat:
+          count: 100
+          then:
+            - ble_client.ble_write:
+                id: bed_1
+                service_uuid: 99fa0001-338a-1024-8a49-009c0215f78a
+                characteristic_uuid: 99fa0002-338a-1024-8a49-009c0215f78a
+                value: [0x0E, 0x00] 
+            - delay: 300ms
+            - logger.log: "Run preset 1" 
+
+  # Preset 2
+  - id: preset_2_select
+    then:
+      - repeat:
+          count: 100
+          then:
+            - ble_client.ble_write:
+                id: bed_1
+                service_uuid: 99fa0001-338a-1024-8a49-009c0215f78a
+                characteristic_uuid: 99fa0002-338a-1024-8a49-009c0215f78a
+                value: [0x0F, 0x00] 
+            - delay: 300ms
+            - logger.log: "Run preset 2"
+
+  # Preset 3
+  - id: preset_3_select
+    then:
+      - repeat:
+          count: 100
+          then:
+            - ble_client.ble_write:
+                id: bed_1
+                service_uuid: 99fa0001-338a-1024-8a49-009c0215f78a
+                characteristic_uuid: 99fa0002-338a-1024-8a49-009c0215f78a
+                value: [0x0C, 0x00] 
+            - delay: 300ms
+            - logger.log: "Run preset 3" 
+
+  # Preset 4
+  - id: preset_4_select
+    then:
+      - repeat:
+          count: 100
+          then:
+            - ble_client.ble_write:
+                id: bed_1
+                service_uuid: 99fa0001-338a-1024-8a49-009c0215f78a
+                characteristic_uuid: 99fa0002-338a-1024-8a49-009c0215f78a
+                value: [0x44, 0x00] 
+            - delay: 300ms
+            - logger.log: "Run preset 4"
